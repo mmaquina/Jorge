@@ -13,6 +13,11 @@ int reductor(FILE * fp, FILE * fop)
 	float vmed[70]; 
 	float imed[70]; 
 	float pot=0;
+	float isum=0;
+	float iaemed[70];
+	float iacmed[70];
+	float iaemeds=0;
+	float iacmeds=0;
 	char fecha[16];
 	char hora[16];
 	char fechactual[16];
@@ -41,9 +46,9 @@ int reductor(FILE * fp, FILE * fop)
 	pch = strtok(NULL," ,");
 
 	vmed[0]  =  atof (pch);//vbmed
-	pch = strtok(NULL," ,");//iamed
+	iaemed[0]  =  atof (pch);//iaemed
 	pch = strtok(NULL," ,");//vacmed
-	pch = strtok(NULL," ,");//iacmed
+	iacmed[0]  =  atof (pch);//iacmed
 	pch = strtok(NULL," ,");//ipvmed
 	imed[0]  =  atof (pch);
 	pch = strtok(NULL," ,");//rpmmed
@@ -85,13 +90,21 @@ int reductor(FILE * fp, FILE * fop)
 		//	printf("%s %s %s %s\n",hora,horactual,fecha,fechactual);
 #if 1
 			pot=0;
+			isum=0;
+			iaemeds=0;
+			iacmeds=0;
 			for(j=0; j<i; j++){
 				pot += vmed[j]*imed[j];
+				isum += imed[j];
+				iaemeds += iaemed[j];
+				iacmeds += iacmed[j];
 			//	if (pot>1)
 			//		printf("v %f\ti %f\t : pot=%f \n",vmed[j],imed[j],pot/i);
 			}
 
-			fprintf(fop,"%s, %s, %f, %f\n", fechactual, horactual,pot/60,pot/i);
+			fprintf(fop,"%s, %s, %f, %f, %f, %f, %f, %f, %f, %f\n", fechactual, horactual,
+				pot/60,	pot/i, isum/60, isum/i, iaemeds/60, iaemeds/i,
+			       	iacmeds/60, iacmeds/i);
 			strcpy(horactual,hora);
 			strcpy(fechactual,fecha);
 
@@ -105,9 +118,9 @@ int reductor(FILE * fp, FILE * fop)
 			//imed[0]  =  atoi (&line[52]);
 			pch = strtok(NULL," ,");
 			vmed[0]  =  atof (pch);//vbmed
-			pch = strtok(NULL," ,");//iamed
+			iaemed[0]  =  atof (pch);//iaemed
 			pch = strtok(NULL," ,");//vacmed
-			pch = strtok(NULL," ,");//iacmed
+			iacmed[0]  =  atof (pch);//iacmed
 			pch = strtok(NULL," ,");//ipvmed
 			imed[0]  =  atof (pch);
 		} else { 
@@ -116,9 +129,10 @@ int reductor(FILE * fp, FILE * fop)
 		//	imed[i]  =  atoi (&line[52]);
 			pch = strtok(NULL," ,");
 			vmed[i]  =  atof (pch);//vbmed
-			pch = strtok(NULL," ,");//iamed
+			iaemed[i]  =  atof (pch);//iaemed
 			pch = strtok(NULL," ,");//vacmed
 			pch = strtok(NULL," ,");//iacmed
+			iacmed[i]  =  atof (pch);//iacmed
 			pch = strtok(NULL," ,");//ipvmed
 			imed[i]  =  atof (pch);
 			i++;
@@ -134,7 +148,9 @@ int reductor(FILE * fp, FILE * fop)
 			}
 
 
-			fprintf(fop,"%s, %s, %f, %f\n", fecha, hora, pot/60, pot/i );
+			fprintf(fop,"%s, %s, %f, %f, %f, %f, %f, %f, %f, %f\n", fecha, hora, pot/60,
+				pot/i, isum/60, isum/i, iaemeds/60, iaemeds/i, iacmeds/60, iacmeds/i);
+					
 
 
 	return EXIT_SUCCESS;
@@ -156,7 +172,8 @@ int main(void)
 	    return -1;
 	}
 
-	fprintf(fpout,"fecha, hora, energia, promedio potencia\n" );
+	fprintf(fpout,"fecha, hora, energia, promedio potencia, IPVMED/60, IPVMED promedio,\
+IAEMED/60, IAEMED promedio,IACMED/60, IACMED promedio,\n" );
 	dir = opendir (".");
 	if (dir != NULL) {
 
