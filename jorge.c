@@ -15,9 +15,11 @@ int reductor(FILE * fp, FILE * fop)
 	float pot=0;
 	float isum=0;
 	float iaemed[70];
+	float vacmed[70];
 	float iacmed[70];
 	float iaemeds=0;
 	float iacmeds=0;
+	float vacmeds=0;
 	char fecha[16];
 	char hora[16];
 	char fechactual[16];
@@ -37,20 +39,30 @@ int reductor(FILE * fp, FILE * fop)
 	i=0;
 
 	pch=strtok(line," ,");//regno
-	pch = strtok(NULL," ,");
-	strcpy(fecha,pch);
-		strcpy(fechactual,pch);
-	pch = strtok(NULL," ,");
-	strcpy(hora,pch);
-		strcpy(horactual,pch);
-	pch = strtok(NULL," ,");
 
+	pch = strtok(NULL," ,");//fecha
+	strcpy(fecha,pch);
+	strcpy(fechactual,pch);
+
+	pch = strtok(NULL," ,");//Hora
+	strcpy(hora,pch);
+	strcpy(horactual,pch);
+
+	pch = strtok(NULL," ,");//vbmed
 	vmed[0]  =  atof (pch);//vbmed
+
+	pch = strtok(NULL," ,");//iaemed
 	iaemed[0]  =  atof (pch);//iaemed
+
 	pch = strtok(NULL," ,");//vacmed
+	vacmed[0]  =  atof (pch);//vacmed
+
+	pch = strtok(NULL," ,");//	iacmed
 	iacmed[0]  =  atof (pch);//iacmed
+
 	pch = strtok(NULL," ,");//ipvmed
-	imed[0]  =  atof (pch);
+	imed[0]  =  atof (pch);//ipvmed
+
 	pch = strtok(NULL," ,");//rpmmed
 	pch = strtok(NULL," ,");//tmed
 	pch = strtok(NULL," ,");//SI1-SI0
@@ -79,11 +91,11 @@ int reductor(FILE * fp, FILE * fop)
 
 
 	while ((fgets(line, num, fp)) != NULL) {
-		pch=strtok(line," ,");//regno
-		pch = strtok(NULL," ,");
-		strcpy(fecha,pch);
-		pch = strtok(NULL," ,");
-		strcpy(hora,pch);
+		pch = strtok(line, " ,");//regno
+		pch = strtok(NULL, " ,");//fecha
+		strcpy(fecha, pch);
+		pch = strtok(NULL, " ,");//hora
+		strcpy(hora, pch);
 		
 		if( (strncmp(horactual,hora,2)!= 0) || (0!=strcmp(fechactual,fecha))) { 
 			//cambio la hora!
@@ -91,11 +103,13 @@ int reductor(FILE * fp, FILE * fop)
 #if 1
 			pot=0;
 			isum=0;
+			vacmeds=0;
 			iaemeds=0;
 			iacmeds=0;
 			for(j=0; j<i; j++){
 				pot += vmed[j]*imed[j];
 				isum += imed[j];
+				vacmeds += vacmed[j];
 				iaemeds += iaemed[j];
 				iacmeds += iacmed[j];
 			//	if (pot>1)
@@ -108,43 +122,73 @@ int reductor(FILE * fp, FILE * fop)
 			strcpy(horactual,hora);
 			strcpy(fechactual,fecha);
 
-			for(j=0; j<i; j++){
-				vmed[i]=0;
-				imed[i]=0;
+			for(j=0; j<70; j++){
+				vmed[j] = 0;
+				imed[j] = 0;
+				vacmed[j] = 0;
+				iaemed[j] = 0;
+				iacmed[j] = 0;
 			}
 
 			i=1;	
 			//vmed[0]  =  atoi (&line[29]);
 			//imed[0]  =  atoi (&line[52]);
-			pch = strtok(NULL," ,");
+			pch = strtok(NULL," ,");//vbmed
 			vmed[0]  =  atof (pch);//vbmed
+
+			pch = strtok(NULL," ,");//iaemed
 			iaemed[0]  =  atof (pch);//iaemed
+
 			pch = strtok(NULL," ,");//vacmed
+			vacmed[0] = atof(pch);//vacmed
+
+			pch = strtok(NULL," ,");//iacmed
 			iacmed[0]  =  atof (pch);//iacmed
+
 			pch = strtok(NULL," ,");//ipvmed
-			imed[0]  =  atof (pch);
+			imed[0]  =  atof (pch);//ipvmed
+
 		} else { 
 			//misma hora
 		//	vmed[i]  =  atoi (&line[29]);
 		//	imed[i]  =  atoi (&line[52]);
-			pch = strtok(NULL," ,");
+			pch = strtok(NULL," ,");//vbmed
 			vmed[i]  =  atof (pch);//vbmed
+
+			pch = strtok(NULL," ,");//iaemed
 			iaemed[i]  =  atof (pch);//iaemed
+
 			pch = strtok(NULL," ,");//vacmed
+			vacmed[i] = atof(pch);//vacmed
+
 			pch = strtok(NULL," ,");//iacmed
 			iacmed[i]  =  atof (pch);//iacmed
+
 			pch = strtok(NULL," ,");//ipvmed
-			imed[i]  =  atof (pch);
+			imed[i]  =  atof (pch);//ipvmed
+
 			i++;
 #endif
 		}
 
 		strtok(pch, line);////////////////////////////////////
-	}
+
+
+	}// end while
+
+
 			//ultima hora!
 			pot=0;
+			isum = 0;
+			vacmeds = 0;
+			iaemeds = 0;
+			iacmeds = 0;
 			for(j=0; j<i; j++){
 				pot += vmed[j]*imed[j];
+				isum += imed[j];
+				vacmeds += vacmed[j];
+				iaemeds += iaemed[j];
+				iacmeds += iacmed[j];
 			}
 
 
